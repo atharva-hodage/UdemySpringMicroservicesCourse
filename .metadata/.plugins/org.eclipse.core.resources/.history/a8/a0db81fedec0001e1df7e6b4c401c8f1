@@ -1,0 +1,39 @@
+
+
+
+
+server.port=9191
+eureka.instance.client.serverUrl.defaultZone=http://localhost:8761/eureka/
+spring.application.name=API-GATEWAY
+
+management.endpoints.web.exposure.include=*
+#exposes all the management endpoints, such as health, info, and metrics, over HTTP. 
+#This allows these endpoints to be accessed by users or other services.
+
+
+## Routes for Employee Service
+spring.cloud.gateway.routes[0].id=EMPLOYEE-SERVICE
+#This line sets the ID of the first route to "EMPLOYEE-SERVICE". The ID is a unique identifier for the route.
+spring.cloud.gateway.routes[0].uri=lb://EMPLOYEE-SERVICE
+#This line sets the URI of the first route to "lb://EMPLOYEE-SERVICE". The lb:// prefix indicates that the URI should be resolved using a load balancer.
+spring.cloud.gateway.routes[0].predicates[0]=Path=/api/message/**
+#The predicate is a condition that must be met for the route to be matched. In this case, the predicate is a path that starts with "/api/employees/". The ** wildcard allows any additional characters after the "/api/employees/" path.
+#spring.cloud.gateway.routes[0].predicates[1]=Path=/api/message/**
+
+
+## Routes for Department Service
+spring.cloud.gateway.routes[1].id=DEPARTMENT-SERVICE
+spring.cloud.gateway.routes[1].uri=lb://DEPARTMENT-SERVICE
+spring.cloud.gateway.routes[1].predicates[0]=Path=/api/departments/**
+spring.cloud.gateway.routes[1].predicates[1]=Path=/api/department/**
+##Instead of using this manual method we can write properties to automatically discover the client
+#spring.cloud.gateway.discovery.locator.enabled=true
+##this enables automatic service discovery with having to write the routes manually.
+#spring.cloud.gateway.discovery.locator.lower-case-service-id=true
+
+ #logging.level.org.springframework.cloud.gateway.handler.RoutePredicateHandlerMapping=DEBUG
+
+management.tracing.sampling.probability=1.0 
+logging.pattern.level=%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]
+logging.level.org.springframework.web=DEBUG
+
